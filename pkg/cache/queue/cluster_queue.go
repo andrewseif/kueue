@@ -179,12 +179,21 @@ func withAfsConsumedResources(consumed *queueafs.AfsConsumedResources) clusterQu
 	}
 }
 
-func newClusterQueue(ctx context.Context, client client.Client, cq *kueue.ClusterQueue, wo workload.Ordering, afsConfig *config.AdmissionFairSharing, afsEntryPenalties *queueafs.AfsEntryPenalties, afsConsumedResources *queueafs.AfsConsumedResources) (*ClusterQueue, error) {
-	var admissionFairSharing *kueue.AdmissionFairSharing
-	if cq.Spec.FairSharing != nil {
-		admissionFairSharing = cq.Spec.FairSharing.AdmissionFairSharing
+// admissionFairSharingFromSpec returns the effective AdmissionFairSharing for a ClusterQueue,
+// preferring the new FairSharing.AdmissionFairSharing field and falling back to the
+// deprecated AdmissionScope field for backward compatibility.
+func admissionFairSharingFromSpec(spec *kueue.ClusterQueueSpec) *kueue.AdmissionFairSharing {
+	if spec.FairSharing != nil && spec.FairSharing.AdmissionFairSharing != nil {
+		return spec.FairSharing.AdmissionFairSharing
 	}
-	enableAdmissionFs, fsResWeights := afs.ResourceWeights(admissionFairSharing, afsConfig)
+	if spec.AdmissionScope != nil {
+		return &kueue.AdmissionFairSharing{Mode: spec.AdmissionScope.AdmissionMode}
+	}
+	return nil
+}
+
+func newClusterQueue(ctx context.Context, client client.Client, cq *kueue.ClusterQueue, wo workload.Ordering, afsConfig *config.AdmissionFairSharing, afsEntryPenalties *queueafs.AfsEntryPenalties, afsConsumedResources *queueafs.AfsConsumedResources) (*ClusterQueue, error) {
+	enableAdmissionFs, fsResWeights := afs.ResourceWeights(admissionFairSharingFromSpec(&cq.Spec), afsConfig)
 	cqImpl := newClusterQueueImpl(
 		ctx,
 		client,
