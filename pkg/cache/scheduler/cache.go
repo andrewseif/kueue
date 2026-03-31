@@ -176,7 +176,6 @@ func (c *Cache) newClusterQueue(log logr.Logger, cq *kueue.ClusterQueue) (*clust
 		AdmittedUsage:       make(resources.FlavorResourceQuantities),
 		resourceNode:        NewResourceNode(),
 		tasCache:            &c.tasCache,
-		AdmissionScope:      cq.Spec.AdmissionScope,
 
 		roleTracker: c.roleTracker,
 		lqMetrics:   c.lqMetrics,
@@ -592,10 +591,10 @@ func (c *Cache) ClusterQueueUsesAdmissionFairSharing(cqName kueue.ClusterQueueRe
 	c.RLock()
 	defer c.RUnlock()
 	cq := c.hm.ClusterQueue(cqName)
-	if cq == nil || cq.AdmissionScope == nil {
+	if cq == nil || cq.AdmissionFairSharing == nil {
 		return false
 	}
-	return cq.AdmissionScope.AdmissionMode == kueue.UsageBasedAdmissionFairSharing
+	return cq.AdmissionFairSharing.Mode == kueue.UsageBasedAdmissionFairSharing
 }
 
 func (c *Cache) UpdateLocalQueue(oldQ, newQ *kueue.LocalQueue) error {

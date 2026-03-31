@@ -27,9 +27,9 @@ import (
 	"sigs.k8s.io/kueue/pkg/util/resource"
 )
 
-func ResourceWeights(cqAdmissionScope *kueue.AdmissionScope, afsConfig *config.AdmissionFairSharing) (bool, map[corev1.ResourceName]float64) {
+func ResourceWeights(afs *kueue.AdmissionFairSharing, afsConfig *config.AdmissionFairSharing) (bool, map[corev1.ResourceName]float64) {
 	enableAdmissionFs, fsResWeights := false, make(map[corev1.ResourceName]float64)
-	if Enabled(afsConfig) && cqAdmissionScope != nil && cqAdmissionScope.AdmissionMode == kueue.UsageBasedAdmissionFairSharing {
+	if Enabled(afsConfig) && afs != nil && afs.Mode == kueue.UsageBasedAdmissionFairSharing {
 		enableAdmissionFs = true
 		fsResWeights = afsConfig.ResourceWeights
 	}

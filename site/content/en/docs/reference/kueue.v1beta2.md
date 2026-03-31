@@ -668,25 +668,16 @@ If empty, the AdmissionCheck will run for all workloads submitted to the Cluster
 </tbody>
 </table>
 
-## `AdmissionMode`     {#kueue-x-k8s-io-v1beta2-AdmissionMode}
-    
-(Alias of `string`)
-
-**Appears in:**
-
-- [AdmissionScope](#kueue-x-k8s-io-v1beta2-AdmissionScope)
-
-
-
-
-
-## `AdmissionScope`     {#kueue-x-k8s-io-v1beta2-AdmissionScope}
+## `AdmissionFairSharing`     {#kueue-x-k8s-io-v1beta2-AdmissionFairSharing}
     
 
 **Appears in:**
 
-- [ClusterQueueSpec](#kueue-x-k8s-io-v1beta2-ClusterQueueSpec)
+- [FairSharing](#kueue-x-k8s-io-v1beta2-FairSharing)
 
+
+<p>AdmissionFairSharing contains the properties of the ClusterQueue
+when participating in AdmissionFairSharing.</p>
 
 
 <table class="table">
@@ -694,12 +685,12 @@ If empty, the AdmissionCheck will run for all workloads submitted to the Cluster
 <tbody>
     
   
-<tr><td><code>admissionMode</code> <B>[Required]</B><br/>
+<tr><td><code>mode</code> <B>[Required]</B><br/>
 <a href="#kueue-x-k8s-io-v1beta2-AdmissionMode"><code>AdmissionMode</code></a>
 </td>
 <td>
-   <p>admissionMode indicates which mode for AdmissionFairSharing should be used
-in the AdmissionScope. Possible values are:</p>
+   <p>mode indicates which mode for AdmissionFairSharing should be used.
+Possible values are:</p>
 <ul>
 <li>UsageBasedAdmissionFairSharing</li>
 <li>NoAdmissionFairSharing</li>
@@ -708,6 +699,51 @@ in the AdmissionScope. Possible values are:</p>
 </tr>
 </tbody>
 </table>
+
+## `AdmissionFairSharingStatus`     {#kueue-x-k8s-io-v1beta2-AdmissionFairSharingStatus}
+    
+
+**Appears in:**
+
+- [FairSharingStatus](#kueue-x-k8s-io-v1beta2-FairSharingStatus)
+
+
+
+<table class="table">
+<thead><tr><th width="30%">Field</th><th>Description</th></tr></thead>
+<tbody>
+    
+  
+<tr><td><code>consumedResources</code> <B>[Required]</B><br/>
+<a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#resourcelist-v1-core"><code>k8s.io/api/core/v1.ResourceList</code></a>
+</td>
+<td>
+   <p>consumedResources represents the aggregated usage of resources over time,
+with decaying function applied.
+The value is populated if usage consumption functionality is enabled in Kueue config.</p>
+</td>
+</tr>
+<tr><td><code>lastUpdate</code> <B>[Required]</B><br/>
+<a href="https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.28/#time-v1-meta"><code>k8s.io/apimachinery/pkg/apis/meta/v1.Time</code></a>
+</td>
+<td>
+   <p>lastUpdate is the time when share and consumed resources were updated.</p>
+</td>
+</tr>
+</tbody>
+</table>
+
+## `AdmissionMode`     {#kueue-x-k8s-io-v1beta2-AdmissionMode}
+    
+(Alias of `string`)
+
+**Appears in:**
+
+- [AdmissionFairSharing](#kueue-x-k8s-io-v1beta2-AdmissionFairSharing)
+
+
+
+
 
 ## `BorrowWithinCohort`     {#kueue-x-k8s-io-v1beta2-BorrowWithinCohort}
     
@@ -1022,13 +1058,6 @@ participating in FairSharing.  The values are only relevant
 if FairSharing is enabled in the Kueue configuration.</p>
 </td>
 </tr>
-<tr><td><code>admissionScope</code><br/>
-<a href="#kueue-x-k8s-io-v1beta2-AdmissionScope"><code>AdmissionScope</code></a>
-</td>
-<td>
-   <p>admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing</p>
-</td>
-</tr>
 </tbody>
 </table>
 
@@ -1323,6 +1352,14 @@ disadvantage against other ClusterQueues and Cohorts.
 When not 0, Weight must be greater than 10^-9.</p>
 </td>
 </tr>
+<tr><td><code>admissionFairSharing</code><br/>
+<a href="#kueue-x-k8s-io-v1beta2-AdmissionFairSharing"><code>AdmissionFairSharing</code></a>
+</td>
+<td>
+   <p>admissionFairSharing contains the properties of the ClusterQueue
+when participating in AdmissionFairSharing.</p>
+</td>
+</tr>
 </tbody>
 </table>
 
@@ -1355,6 +1392,13 @@ divided by the weight.  If zero, it means that the usage of
 the Node is below the nominal quota.  If the Node has a
 weight of zero and is borrowing, this will return
 9223372036854775807, the maximum possible share value.</p>
+</td>
+</tr>
+<tr><td><code>admissionFairSharingStatus</code><br/>
+<a href="#kueue-x-k8s-io-v1beta2-AdmissionFairSharingStatus"><code>AdmissionFairSharingStatus</code></a>
+</td>
+<td>
+   <p>admissionFairSharingStatus represents information relevant to the Admission Fair Sharing</p>
 </td>
 </tr>
 </tbody>

@@ -88,8 +88,6 @@ type ClusterQueueSpecApplyConfiguration struct {
 	// participating in FairSharing.  The values are only relevant
 	// if FairSharing is enabled in the Kueue configuration.
 	FairSharing *FairSharingApplyConfiguration `json:"fairSharing,omitempty"`
-	// admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing
-	AdmissionScope *AdmissionScopeApplyConfiguration `json:"admissionScope,omitempty"`
 }
 
 // ClusterQueueSpecApplyConfiguration constructs a declarative configuration of the ClusterQueueSpec type for use with
@@ -182,13 +180,5 @@ func (b *ClusterQueueSpecApplyConfiguration) WithStopPolicy(value kueuev1beta1.S
 // If called multiple times, the FairSharing field is set to the value of the last call.
 func (b *ClusterQueueSpecApplyConfiguration) WithFairSharing(value *FairSharingApplyConfiguration) *ClusterQueueSpecApplyConfiguration {
 	b.FairSharing = value
-	return b
-}
-
-// WithAdmissionScope sets the AdmissionScope field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the AdmissionScope field is set to the value of the last call.
-func (b *ClusterQueueSpecApplyConfiguration) WithAdmissionScope(value *AdmissionScopeApplyConfiguration) *ClusterQueueSpecApplyConfiguration {
-	b.AdmissionScope = value
 	return b
 }

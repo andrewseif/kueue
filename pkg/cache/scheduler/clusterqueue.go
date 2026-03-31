@@ -94,7 +94,7 @@ type clusterQueue struct {
 	// TAS Workloads are accounted again when TAS cache becomes initialized.
 	isTASSynced bool
 
-	AdmissionScope *kueue.AdmissionScope
+	AdmissionFairSharing *kueue.AdmissionFairSharing
 
 	roleTracker *roletracker.RoleTracker
 
@@ -178,7 +178,11 @@ func (c *clusterQueue) updateClusterQueue(log logr.Logger, in *kueue.ClusterQueu
 	}
 
 	c.FairWeight = parseFairWeight(in.Spec.FairSharing)
-	c.AdmissionScope = in.Spec.AdmissionScope
+	if in.Spec.FairSharing != nil {
+		c.AdmissionFairSharing = in.Spec.FairSharing.AdmissionFairSharing
+	} else {
+		c.AdmissionFairSharing = nil
+	}
 	return nil
 }
 

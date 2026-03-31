@@ -130,7 +130,7 @@ type ClusterQueue struct {
 
 	clock clock.Clock
 
-	AdmissionScope *kueue.AdmissionScope
+	AdmissionFairSharing *kueue.AdmissionFairSharing
 
 	afsEntryPenalties         *queueafs.AfsEntryPenalties
 	localQueuesInClusterQueue map[utilqueue.LocalQueueReference]bool
@@ -180,7 +180,11 @@ func withAfsConsumedResources(consumed *queueafs.AfsConsumedResources) clusterQu
 }
 
 func newClusterQueue(ctx context.Context, client client.Client, cq *kueue.ClusterQueue, wo workload.Ordering, afsConfig *config.AdmissionFairSharing, afsEntryPenalties *queueafs.AfsEntryPenalties, afsConsumedResources *queueafs.AfsConsumedResources) (*ClusterQueue, error) {
-	enableAdmissionFs, fsResWeights := afs.ResourceWeights(cq.Spec.AdmissionScope, afsConfig)
+	var admissionFairSharing *kueue.AdmissionFairSharing
+	if cq.Spec.FairSharing != nil {
+		admissionFairSharing = cq.Spec.FairSharing.AdmissionFairSharing
+	}
+	enableAdmissionFs, fsResWeights := afs.ResourceWeights(admissionFairSharing, afsConfig)
 	cqImpl := newClusterQueueImpl(
 		ctx,
 		client,

@@ -17,7 +17,9 @@ limitations under the License.
 package v1beta2
 
 import (
+	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 // FairSharing contains the properties of the ClusterQueue or Cohort,
@@ -37,6 +39,24 @@ type FairSharing struct {
 	// +kubebuilder:default=1
 	// +optional
 	Weight *resource.Quantity `json:"weight,omitempty"`
+
+	// admissionFairSharing contains the properties of the ClusterQueue
+	// when participating in AdmissionFairSharing.
+	// +optional
+	AdmissionFairSharing *AdmissionFairSharing `json:"admissionFairSharing,omitempty"`
+}
+
+// AdmissionFairSharing contains the properties of the ClusterQueue
+// when participating in AdmissionFairSharing.
+type AdmissionFairSharing struct {
+	// mode indicates which mode for AdmissionFairSharing should be used.
+	// Possible values are:
+	// - UsageBasedAdmissionFairSharing
+	// - NoAdmissionFairSharing
+	//
+	// +kubebuilder:validation:Enum=UsageBasedAdmissionFairSharing;NoAdmissionFairSharing
+	// +required
+	Mode AdmissionMode `json:"mode"`
 }
 
 // FairSharingStatus contains the information about the current status of Fair Sharing.
@@ -50,17 +70,22 @@ type FairSharingStatus struct {
 	// 9223372036854775807, the maximum possible share value.
 	// +required
 	WeightedShare int64 `json:"weightedShare"`
+
+	// admissionFairSharingStatus represents information relevant to the Admission Fair Sharing
+	// +optional
+	AdmissionFairSharingStatus *AdmissionFairSharingStatus `json:"admissionFairSharingStatus,omitempty"`
 }
 
-type AdmissionScope struct {
-	// admissionMode indicates which mode for AdmissionFairSharing should be used
-	// in the AdmissionScope. Possible values are:
-	// - UsageBasedAdmissionFairSharing
-	// - NoAdmissionFairSharing
-	//
-	// +kubebuilder:validation:Enum=UsageBasedAdmissionFairSharing;NoAdmissionFairSharing
+type AdmissionFairSharingStatus struct {
+	// consumedResources represents the aggregated usage of resources over time,
+	// with decaying function applied.
+	// The value is populated if usage consumption functionality is enabled in Kueue config.
 	// +required
-	AdmissionMode AdmissionMode `json:"admissionMode,omitempty"`
+	ConsumedResources corev1.ResourceList `json:"consumedResources"`
+
+	// lastUpdate is the time when share and consumed resources were updated.
+	// +required
+	LastUpdate metav1.Time `json:"lastUpdate"`
 }
 
 type AdmissionMode string
