@@ -73,6 +73,21 @@ spec:
                   participating in AdmissionFairSharing.  The values are only relevant
                   if AdmissionFairSharing is enabled in the Kueue configuration.
                 properties:
+                  admissionFairSharing:
+                    description: |-
+                      admissionFairSharing contains the properties of the ClusterQueue
+                      when participating in AdmissionFairSharing.
+                    properties:
+                      mode:
+                        description: |-
+                          mode indicates which mode for AdmissionFairSharing should be used.
+                          Possible values are:
+                          - UsageBasedAdmissionFairSharing
+                          - NoAdmissionFairSharing
+                        type: string
+                    required:
+                    - mode
+                    type: object
                   weight:
                     anyOf:
                     - type: integer
@@ -479,6 +494,24 @@ spec:
                   participating in AdmissionFairSharing.  The values are only relevant
                   if AdmissionFairSharing is enabled in the Kueue configuration.
                 properties:
+                  admissionFairSharing:
+                    description: |-
+                      admissionFairSharing contains the properties of the ClusterQueue
+                      when participating in AdmissionFairSharing.
+                    properties:
+                      mode:
+                        description: |-
+                          mode indicates which mode for AdmissionFairSharing should be used.
+                          Possible values are:
+                          - UsageBasedAdmissionFairSharing
+                          - NoAdmissionFairSharing
+                        enum:
+                        - UsageBasedAdmissionFairSharing
+                        - NoAdmissionFairSharing
+                        type: string
+                    required:
+                    - mode
+                    type: object
                   weight:
                     anyOf:
                     - type: integer
