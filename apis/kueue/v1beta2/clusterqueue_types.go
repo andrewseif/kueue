@@ -138,6 +138,11 @@ type ClusterQueueSpec struct {
 	// if FairSharing is enabled in the Kueue configuration.
 	// +optional
 	FairSharing *FairSharing `json:"fairSharing,omitempty"`
+
+	// admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing.
+	// Deprecated: Use FairSharing.AdmissionFairSharing instead.
+	// +optional
+	AdmissionScope *AdmissionScope `json:"admissionScope,omitempty"`
 }
 
 // AdmissionChecksStrategy defines a strategy for a AdmissionCheck.

@@ -184,8 +184,10 @@ func (c *clusterQueue) updateClusterQueue(
 	}
 
 	c.FairWeight = parseFairWeight(in.Spec.FairSharing)
-	if in.Spec.FairSharing != nil {
+	if in.Spec.FairSharing != nil && in.Spec.FairSharing.AdmissionFairSharing != nil {
 		c.AdmissionFairSharing = in.Spec.FairSharing.AdmissionFairSharing
+	} else if in.Spec.AdmissionScope != nil {
+		c.AdmissionFairSharing = &kueue.AdmissionFairSharing{Mode: in.Spec.AdmissionScope.AdmissionMode}
 	} else {
 		c.AdmissionFairSharing = nil
 	}

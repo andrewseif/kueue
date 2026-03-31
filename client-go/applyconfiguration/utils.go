@@ -58,6 +58,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &kueuev1beta1.AdmissionFairSharingApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("AdmissionFairSharingStatus"):
 		return &kueuev1beta1.AdmissionFairSharingStatusApplyConfiguration{}
+	case v1beta1.SchemeGroupVersion.WithKind("AdmissionScope"):
+		return &kueuev1beta1.AdmissionScopeApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("BorrowWithinCohort"):
 		return &kueuev1beta1.BorrowWithinCohortApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("ClusterProfileReference"):
@@ -196,6 +198,8 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &kueuev1beta2.AdmissionFairSharingApplyConfiguration{}
 	case v1beta2.SchemeGroupVersion.WithKind("AdmissionFairSharingStatus"):
 		return &kueuev1beta2.AdmissionFairSharingStatusApplyConfiguration{}
+	case v1beta2.SchemeGroupVersion.WithKind("AdmissionScope"):
+		return &kueuev1beta2.AdmissionScopeApplyConfiguration{}
 	case v1beta2.SchemeGroupVersion.WithKind("BorrowWithinCohort"):
 		return &kueuev1beta2.BorrowWithinCohortApplyConfiguration{}
 	case v1beta2.SchemeGroupVersion.WithKind("ClusterProfileReference"):

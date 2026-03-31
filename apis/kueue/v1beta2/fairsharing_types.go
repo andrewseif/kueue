@@ -88,6 +88,19 @@ type AdmissionFairSharingStatus struct {
 	LastUpdate metav1.Time `json:"lastUpdate"`
 }
 
+// AdmissionScope indicates the admission fair sharing mode for a ClusterQueue.
+// Deprecated: Use AdmissionFairSharing instead.
+type AdmissionScope struct {
+	// admissionMode indicates which mode for AdmissionFairSharing should be used
+	// in the AdmissionScope. Possible values are:
+	// - UsageBasedAdmissionFairSharing
+	// - NoAdmissionFairSharing
+	//
+	// +kubebuilder:validation:Enum=UsageBasedAdmissionFairSharing;NoAdmissionFairSharing
+	// +required
+	AdmissionMode AdmissionMode `json:"admissionMode,omitempty"`
+}
+
 type AdmissionMode string
 
 const (
