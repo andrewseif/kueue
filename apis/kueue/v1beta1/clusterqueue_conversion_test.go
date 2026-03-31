@@ -195,68 +195,81 @@ func TestClusterQueueConvertTo(t *testing.T) {
 				},
 			},
 		},
-		"complete ClusterQueue with all fields": {
-			input: &ClusterQueue{
-				ObjectMeta: defaultObjectMeta,
-				Spec: ClusterQueueSpec{
-					Cohort:          "prod-cohort",
-					AdmissionChecks: []AdmissionCheckReference{"multikueue-check"},
-					FlavorFungibility: &FlavorFungibility{
-						WhenCanPreempt: TryNextFlavor,
-						WhenCanBorrow:  MayStopSearch,
-					},
-					QueueingStrategy: StrictFIFO,
+		"complete ClusterQueue with all fields": func() struct {
+			input    *ClusterQueue
+			expected *v1beta2.ClusterQueue
+		} {
+			afsStatus := &AdmissionFairSharingStatus{
+				ConsumedResources: corev1.ResourceList{
+					corev1.ResourceCPU: resource.MustParse("10"),
 				},
-				Status: ClusterQueueStatus{
-					FairSharing: &FairSharingStatus{
-						WeightedShare: 100,
-						AdmissionFairSharingStatus: &AdmissionFairSharingStatus{
-							ConsumedResources: corev1.ResourceList{
-								corev1.ResourceCPU: resource.MustParse("10"),
+				LastUpdate: metav1.Now(),
+			}
+			return struct {
+				input    *ClusterQueue
+				expected *v1beta2.ClusterQueue
+			}{
+				input: &ClusterQueue{
+					ObjectMeta: defaultObjectMeta,
+					Spec: ClusterQueueSpec{
+						Cohort:          "prod-cohort",
+						AdmissionChecks: []AdmissionCheckReference{"multikueue-check"},
+						FlavorFungibility: &FlavorFungibility{
+							WhenCanPreempt: TryNextFlavor,
+							WhenCanBorrow:  MayStopSearch,
+						},
+						QueueingStrategy: StrictFIFO,
+					},
+					Status: ClusterQueueStatus{
+						FairSharing: &FairSharingStatus{
+							WeightedShare:              100,
+							AdmissionFairSharingStatus: afsStatus,
+						},
+						Conditions: []metav1.Condition{
+							{
+								Type:   "Active",
+								Status: metav1.ConditionTrue,
+								Reason: "Ready",
 							},
-							LastUpdate: metav1.Now(),
 						},
+						PendingWorkloads: 5,
 					},
-					Conditions: []metav1.Condition{
-						{
-							Type:   "Active",
-							Status: metav1.ConditionTrue,
-							Reason: "Ready",
-						},
-					},
-					PendingWorkloads: 5,
 				},
-			},
-			expected: &v1beta2.ClusterQueue{
-				ObjectMeta: defaultObjectMeta,
-				Spec: v1beta2.ClusterQueueSpec{
-					CohortName: "prod-cohort",
-					AdmissionChecksStrategy: &v1beta2.AdmissionChecksStrategy{
-						AdmissionChecks: []v1beta2.AdmissionCheckStrategyRule{
-							{Name: "multikueue-check"},
+				expected: &v1beta2.ClusterQueue{
+					ObjectMeta: defaultObjectMeta,
+					Spec: v1beta2.ClusterQueueSpec{
+						CohortName: "prod-cohort",
+						AdmissionChecksStrategy: &v1beta2.AdmissionChecksStrategy{
+							AdmissionChecks: []v1beta2.AdmissionCheckStrategyRule{
+								{Name: "multikueue-check"},
+							},
 						},
-					},
-					FlavorFungibility: &v1beta2.FlavorFungibility{
-						WhenCanPreempt: v1beta2.TryNextFlavor,
-						WhenCanBorrow:  v1beta2.MayStopSearch,
-					},
-					QueueingStrategy: v1beta2.StrictFIFO,
-				},
-				Status: v1beta2.ClusterQueueStatus{
-					FairSharing: &v1beta2.FairSharingStatus{
-						WeightedShare: 100,
-					},
-					Conditions: []metav1.Condition{
-						{
-							Type:   "Active",
-							Status: metav1.ConditionTrue,
-							Reason: "Ready",
+						FlavorFungibility: &v1beta2.FlavorFungibility{
+							WhenCanPreempt: v1beta2.TryNextFlavor,
+							WhenCanBorrow:  v1beta2.MayStopSearch,
 						},
+						QueueingStrategy: v1beta2.StrictFIFO,
 					},
-					PendingWorkloads: 5,
+					Status: v1beta2.ClusterQueueStatus{
+						FairSharing: &v1beta2.FairSharingStatus{
+							WeightedShare: 100,
+							AdmissionFairSharingStatus: &v1beta2.AdmissionFairSharingStatus{
+								ConsumedResources: afsStatus.ConsumedResources,
+								LastUpdate:        afsStatus.LastUpdate,
+							},
+						},
+						Conditions: []metav1.Condition{
+							{
+								Type:   "Active",
+								Status: metav1.ConditionTrue,
+								Reason: "Ready",
+							},
+						},
+						PendingWorkloads: 5,
+					},
 				},
-			},
-		},
+			}
+		}(),
 	}
 
 	for name, tc := range testCases {
