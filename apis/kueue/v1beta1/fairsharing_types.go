@@ -54,7 +54,7 @@ type AdmissionFairSharing struct {
 	// - NoAdmissionFairSharing
 	//
 	// +required
-	Mode AdmissionMode `json:"mode"`
+	Mode AdmissionMode `json:"mode,omitempty"`
 }
 
 // FairSharingStatus contains the information about the current status of Fair Sharing.
