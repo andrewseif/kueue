@@ -678,6 +678,38 @@ If empty, the AdmissionCheck will run for all workloads submitted to the Cluster
 </tbody>
 </table>
 
+## `AdmissionFairSharing`     {#kueue-x-k8s-io-v1beta1-AdmissionFairSharing}
+    
+
+**Appears in:**
+
+- [FairSharing](#kueue-x-k8s-io-v1beta1-FairSharing)
+
+
+<p>AdmissionFairSharing contains the properties of the ClusterQueue
+when participating in AdmissionFairSharing.</p>
+
+
+<table class="table">
+<thead><tr><th width="30%">Field</th><th>Description</th></tr></thead>
+<tbody>
+    
+  
+<tr><td><code>mode</code> <B>[Required]</B><br/>
+<a href="#kueue-x-k8s-io-v1beta1-AdmissionMode"><code>AdmissionMode</code></a>
+</td>
+<td>
+   <p>mode indicates which mode for AdmissionFairSharing should be used.
+Possible values are:</p>
+<ul>
+<li>UsageBasedAdmissionFairSharing</li>
+<li>NoAdmissionFairSharing</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+
 ## `AdmissionFairSharingStatus`     {#kueue-x-k8s-io-v1beta1-AdmissionFairSharingStatus}
     
 
@@ -717,40 +749,11 @@ The value is populated if usage consumption functionality is enabled in Kueue co
 
 **Appears in:**
 
-- [AdmissionScope](#kueue-x-k8s-io-v1beta1-AdmissionScope)
+- [AdmissionFairSharing](#kueue-x-k8s-io-v1beta1-AdmissionFairSharing)
 
 
 
 
-
-## `AdmissionScope`     {#kueue-x-k8s-io-v1beta1-AdmissionScope}
-    
-
-**Appears in:**
-
-- [ClusterQueueSpec](#kueue-x-k8s-io-v1beta1-ClusterQueueSpec)
-
-
-
-<table class="table">
-<thead><tr><th width="30%">Field</th><th>Description</th></tr></thead>
-<tbody>
-    
-  
-<tr><td><code>admissionMode</code> <B>[Required]</B><br/>
-<a href="#kueue-x-k8s-io-v1beta1-AdmissionMode"><code>AdmissionMode</code></a>
-</td>
-<td>
-   <p>admissionMode indicates which mode for AdmissionFairSharing should be used
-in the AdmissionScope. Possible values are:</p>
-<ul>
-<li>UsageBasedAdmissionFairSharing</li>
-<li>NoAdmissionFairSharing</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
 
 ## `BorrowWithinCohort`     {#kueue-x-k8s-io-v1beta1-BorrowWithinCohort}
     
@@ -1139,13 +1142,6 @@ participating in FairSharing.  The values are only relevant
 if FairSharing is enabled in the Kueue configuration.</p>
 </td>
 </tr>
-<tr><td><code>admissionScope</code><br/>
-<a href="#kueue-x-k8s-io-v1beta1-AdmissionScope"><code>AdmissionScope</code></a>
-</td>
-<td>
-   <p>admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing</p>
-</td>
-</tr>
 </tbody>
 </table>
 
@@ -1417,6 +1413,14 @@ with the highest share.  A zero weight implies infinite
 share value, meaning that this Node will always be at
 disadvantage against other ClusterQueues and Cohorts.
 When not 0, Weight must be greater than 10^-9.</p>
+</td>
+</tr>
+<tr><td><code>admissionFairSharing</code><br/>
+<a href="#kueue-x-k8s-io-v1beta1-AdmissionFairSharing"><code>AdmissionFairSharing</code></a>
+</td>
+<td>
+   <p>admissionFairSharing contains the properties of the ClusterQueue
+when participating in AdmissionFairSharing.</p>
 </td>
 </tr>
 </tbody>

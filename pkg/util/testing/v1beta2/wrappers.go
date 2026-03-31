@@ -915,10 +915,13 @@ func (c *ClusterQueueWrapper) AdmissionCheckStrategy(acs ...kueue.AdmissionCheck
 }
 
 func (c *ClusterQueueWrapper) AdmissionMode(am kueue.AdmissionMode) *ClusterQueueWrapper {
-	if c.Spec.AdmissionScope == nil {
-		c.Spec.AdmissionScope = &kueue.AdmissionScope{}
+	if c.Spec.FairSharing == nil {
+		c.Spec.FairSharing = &kueue.FairSharing{}
 	}
-	c.Spec.AdmissionScope.AdmissionMode = am
+	if c.Spec.FairSharing.AdmissionFairSharing == nil {
+		c.Spec.FairSharing.AdmissionFairSharing = &kueue.AdmissionFairSharing{}
+	}
+	c.Spec.FairSharing.AdmissionFairSharing.Mode = am
 	return c
 }
 

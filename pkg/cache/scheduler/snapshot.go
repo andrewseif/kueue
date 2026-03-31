@@ -244,10 +244,10 @@ func (c *Cache) snapshotClusterQueue(
 		cc.ResourceGroups[i] = rg.Clone()
 	}
 	if afs.Enabled(c.admissionFairSharing) {
-		if cq.AdmissionScope != nil {
-			cc.AdmissionScope = *cq.AdmissionScope.DeepCopy()
+		if cq.AdmissionFairSharing != nil {
+			cc.AdmissionFairSharing = *cq.AdmissionFairSharing.DeepCopy()
 		}
-		afsEnabled, resourceWeights := afs.ResourceWeights(&cc.AdmissionScope, c.admissionFairSharing)
+		afsEnabled, resourceWeights := afs.ResourceWeights(&cc.AdmissionFairSharing, c.admissionFairSharing)
 		if !afsEnabled {
 			return cc, nil
 		}
