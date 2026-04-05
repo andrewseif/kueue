@@ -89,6 +89,7 @@ type ClusterQueueSpecApplyConfiguration struct {
 	// if FairSharing is enabled in the Kueue configuration.
 	FairSharing *FairSharingApplyConfiguration `json:"fairSharing,omitempty"`
 	// admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing.
+	//
 	// Deprecated: Use FairSharing.AdmissionFairSharing instead.
 	AdmissionScope *AdmissionScopeApplyConfiguration `json:"admissionScope,omitempty"`
 }
@@ -189,7 +190,6 @@ func (b *ClusterQueueSpecApplyConfiguration) WithFairSharing(value *FairSharingA
 // WithAdmissionScope sets the AdmissionScope field in the declarative configuration to the given value
 // and returns the receiver, so that objects can be built by chaining "With" function invocations.
 // If called multiple times, the AdmissionScope field is set to the value of the last call.
-// Deprecated: Use WithFairSharing with AdmissionFairSharing instead.
 func (b *ClusterQueueSpecApplyConfiguration) WithAdmissionScope(value *AdmissionScopeApplyConfiguration) *ClusterQueueSpecApplyConfiguration {
 	b.AdmissionScope = value
 	return b

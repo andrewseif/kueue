@@ -24,14 +24,20 @@ import (
 
 // AdmissionScopeApplyConfiguration represents a declarative configuration of the AdmissionScope type for use
 // with apply.
-// Deprecated: Use AdmissionFairSharingApplyConfiguration instead.
+//
+// AdmissionScope indicates the admission fair sharing mode for a ClusterQueue.
+//
+// Deprecated: Use AdmissionFairSharing instead.
 type AdmissionScopeApplyConfiguration struct {
+	// admissionMode indicates which mode for AdmissionFairSharing should be used
+	// in the AdmissionScope. Possible values are:
+	// - UsageBasedAdmissionFairSharing
+	// - NoAdmissionFairSharing
 	AdmissionMode *kueuev1beta2.AdmissionMode `json:"admissionMode,omitempty"`
 }
 
-// AdmissionScope constructs a declarative configuration of the AdmissionScope type for use with
+// AdmissionScopeApplyConfiguration constructs a declarative configuration of the AdmissionScope type for use with
 // apply.
-// Deprecated: Use AdmissionFairSharing instead.
 func AdmissionScope() *AdmissionScopeApplyConfiguration {
 	return &AdmissionScopeApplyConfiguration{}
 }

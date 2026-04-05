@@ -89,6 +89,7 @@ type AdmissionFairSharingStatus struct {
 }
 
 // AdmissionScope indicates the admission fair sharing mode for a ClusterQueue.
+//
 // Deprecated: Use AdmissionFairSharing instead.
 type AdmissionScope struct {
 	// admissionMode indicates which mode for AdmissionFairSharing should be used

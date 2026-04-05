@@ -741,9 +741,43 @@ The value is populated if usage consumption functionality is enabled in Kueue co
 
 - [AdmissionFairSharing](#kueue-x-k8s-io-v1beta2-AdmissionFairSharing)
 
+- [AdmissionScope](#kueue-x-k8s-io-v1beta2-AdmissionScope)
 
 
 
+
+
+## `AdmissionScope`     {#kueue-x-k8s-io-v1beta2-AdmissionScope}
+    
+
+**Appears in:**
+
+- [ClusterQueueSpec](#kueue-x-k8s-io-v1beta2-ClusterQueueSpec)
+
+
+<p>AdmissionScope indicates the admission fair sharing mode for a ClusterQueue.</p>
+<p>Deprecated: Use AdmissionFairSharing instead.</p>
+
+
+<table class="table">
+<thead><tr><th width="30%">Field</th><th>Description</th></tr></thead>
+<tbody>
+    
+  
+<tr><td><code>admissionMode</code> <B>[Required]</B><br/>
+<a href="#kueue-x-k8s-io-v1beta2-AdmissionMode"><code>AdmissionMode</code></a>
+</td>
+<td>
+   <p>admissionMode indicates which mode for AdmissionFairSharing should be used
+in the AdmissionScope. Possible values are:</p>
+<ul>
+<li>UsageBasedAdmissionFairSharing</li>
+<li>NoAdmissionFairSharing</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 
 ## `BorrowWithinCohort`     {#kueue-x-k8s-io-v1beta2-BorrowWithinCohort}
     
@@ -1056,6 +1090,14 @@ made.</p>
    <p>fairSharing defines the properties of the ClusterQueue when
 participating in FairSharing.  The values are only relevant
 if FairSharing is enabled in the Kueue configuration.</p>
+</td>
+</tr>
+<tr><td><code>admissionScope</code><br/>
+<a href="#kueue-x-k8s-io-v1beta2-AdmissionScope"><code>AdmissionScope</code></a>
+</td>
+<td>
+   <p>admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing.</p>
+<p>Deprecated: Use FairSharing.AdmissionFairSharing instead.</p>
 </td>
 </tr>
 </tbody>

@@ -71,12 +71,41 @@ func Convert_v1beta1_ClusterQueueSpec_To_v1beta2_ClusterQueueSpec(in *ClusterQue
 		}
 	}
 
+	// Propagate deprecated admissionScope to fairSharing.admissionFairSharing.
+	// v1beta1 no longer has FairSharing.AdmissionFairSharing, so we use admissionScope as the source.
+	if in.AdmissionScope != nil {
+		if out.FairSharing == nil {
+			out.FairSharing = &v1beta2.FairSharing{}
+		}
+		out.FairSharing.AdmissionFairSharing = &v1beta2.AdmissionFairSharing{
+			Mode: v1beta2.AdmissionMode(in.AdmissionScope.AdmissionMode),
+		}
+	}
+
 	return nil
 }
 
 func Convert_v1beta2_ClusterQueueSpec_To_v1beta1_ClusterQueueSpec(in *v1beta2.ClusterQueueSpec, out *ClusterQueueSpec, s conversionapi.Scope) error {
 	out.Cohort = CohortReference(in.CohortName)
-	return autoConvert_v1beta2_ClusterQueueSpec_To_v1beta1_ClusterQueueSpec(in, out, s)
+	if err := autoConvert_v1beta2_ClusterQueueSpec_To_v1beta1_ClusterQueueSpec(in, out, s); err != nil {
+		return err
+	}
+
+	// Propagate fairSharing.admissionFairSharing back to the deprecated admissionScope field.
+	if in.FairSharing != nil && in.FairSharing.AdmissionFairSharing != nil {
+		out.AdmissionScope = &AdmissionScope{
+			AdmissionMode: AdmissionMode(in.FairSharing.AdmissionFairSharing.Mode),
+		}
+	}
+
+	return nil
+}
+
+// Convert_v1beta2_FairSharing_To_v1beta1_FairSharing is the manual conversion function required because
+// v1beta2.FairSharing.AdmissionFairSharing does not exist in v1beta1.FairSharing.
+// The AdmissionFairSharing value is handled at the ClusterQueueSpec level via the admissionScope field.
+func Convert_v1beta2_FairSharing_To_v1beta1_FairSharing(in *v1beta2.FairSharing, out *FairSharing, s conversionapi.Scope) error {
+	return autoConvert_v1beta2_FairSharing_To_v1beta1_FairSharing(in, out, s)
 }
 
 func Convert_v1beta1_ClusterQueueStatus_To_v1beta2_ClusterQueueStatus(in *ClusterQueueStatus, out *v1beta2.ClusterQueueStatus, s conversionapi.Scope) error {

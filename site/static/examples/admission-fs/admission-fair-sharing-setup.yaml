@@ -10,8 +10,9 @@ metadata:
 spec:
   namespaceSelector: {} # match all.
   queueingStrategy: "StrictFIFO"
-  admissionScope:
-    admissionMode: "UsageBasedAdmissionFairSharing"
+  fairSharing:
+    admissionFairSharing:
+      mode: "UsageBasedAdmissionFairSharing"
   resourceGroups:
   - coveredResources: ["cpu"]
     flavors:

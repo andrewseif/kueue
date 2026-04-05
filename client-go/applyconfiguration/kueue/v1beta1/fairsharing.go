@@ -40,9 +40,6 @@ type FairSharingApplyConfiguration struct {
 	// disadvantage against other ClusterQueues and Cohorts.
 	// When not 0, Weight must be greater than 10^-9.
 	Weight *resource.Quantity `json:"weight,omitempty"`
-	// admissionFairSharing contains the properties of the ClusterQueue
-	// when participating in AdmissionFairSharing.
-	AdmissionFairSharing *AdmissionFairSharingApplyConfiguration `json:"admissionFairSharing,omitempty"`
 }
 
 // FairSharingApplyConfiguration constructs a declarative configuration of the FairSharing type for use with
@@ -56,13 +53,5 @@ func FairSharing() *FairSharingApplyConfiguration {
 // If called multiple times, the Weight field is set to the value of the last call.
 func (b *FairSharingApplyConfiguration) WithWeight(value resource.Quantity) *FairSharingApplyConfiguration {
 	b.Weight = &value
-	return b
-}
-
-// WithAdmissionFairSharing sets the AdmissionFairSharing field in the declarative configuration to the given value
-// and returns the receiver, so that objects can be built by chaining "With" function invocations.
-// If called multiple times, the AdmissionFairSharing field is set to the value of the last call.
-func (b *FairSharingApplyConfiguration) WithAdmissionFairSharing(value *AdmissionFairSharingApplyConfiguration) *FairSharingApplyConfiguration {
-	b.AdmissionFairSharing = value
 	return b
 }

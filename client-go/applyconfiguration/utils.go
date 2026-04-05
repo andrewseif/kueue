@@ -54,8 +54,6 @@ func ForKind(kind schema.GroupVersionKind) interface{} {
 		return &kueuev1beta1.AdmissionCheckStatusApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("AdmissionCheckStrategyRule"):
 		return &kueuev1beta1.AdmissionCheckStrategyRuleApplyConfiguration{}
-	case v1beta1.SchemeGroupVersion.WithKind("AdmissionFairSharing"):
-		return &kueuev1beta1.AdmissionFairSharingApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("AdmissionFairSharingStatus"):
 		return &kueuev1beta1.AdmissionFairSharingStatusApplyConfiguration{}
 	case v1beta1.SchemeGroupVersion.WithKind("AdmissionScope"):

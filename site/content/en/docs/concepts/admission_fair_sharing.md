@@ -60,7 +60,7 @@ admissionFairSharing:
 
 ### ClusterQueue configuration
 
-Enable Admission Fair Sharing by adding an AdmissionScope to your ClusterQueue:
+Enable Admission Fair Sharing by setting `admissionFairSharing` inside the `fairSharing` section of your ClusterQueue:
 
 ```yaml
 apiVersion: kueue.x-k8s.io/v1beta2
@@ -68,11 +68,16 @@ kind: ClusterQueue
 metadata:
   name: sample-queue
 spec:
-  admissionScope:
-    admissionMode: UsageBasedAdmissionFairSharing
+  fairSharing:
+    admissionFairSharing:
+      mode: UsageBasedAdmissionFairSharing
   resources:
     # ...existing resource configuration...
 ```
+
+{{% alert title="Note" color="primary" %}}
+The `spec.admissionScope` field is deprecated. Use `spec.fairSharing.admissionFairSharing` instead.
+{{% /alert %}}
 
 ### LocalQueue configuration
 

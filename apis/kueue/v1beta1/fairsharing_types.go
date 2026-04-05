@@ -38,23 +38,6 @@ type FairSharing struct {
 	// When not 0, Weight must be greater than 10^-9.
 	// +kubebuilder:default=1
 	Weight *resource.Quantity `json:"weight,omitempty"`
-
-	// admissionFairSharing contains the properties of the ClusterQueue
-	// when participating in AdmissionFairSharing.
-	// +optional
-	AdmissionFairSharing *AdmissionFairSharing `json:"admissionFairSharing,omitempty"`
-}
-
-// AdmissionFairSharing contains the properties of the ClusterQueue
-// when participating in AdmissionFairSharing.
-type AdmissionFairSharing struct {
-	// mode indicates which mode for AdmissionFairSharing should be used.
-	// Possible values are:
-	// - UsageBasedAdmissionFairSharing
-	// - NoAdmissionFairSharing
-	//
-	// +required
-	Mode AdmissionMode `json:"mode,omitempty"`
 }
 
 // FairSharingStatus contains the information about the current status of Fair Sharing.
@@ -86,6 +69,7 @@ type AdmissionFairSharingStatus struct {
 }
 
 // AdmissionScope indicates the admission fair sharing mode for a ClusterQueue.
+//
 // Deprecated: Use AdmissionFairSharing instead.
 type AdmissionScope struct {
 	// admissionMode indicates which mode for AdmissionFairSharing should be used

@@ -53,7 +53,7 @@ admissionFairSharing:
 
 ### ClusterQueue 配置 {#cluster-queue-configuration}
 
-通过在 ClusterQueue 中添加 AdmissionScope 来启用准入公平共享：
+通过在 ClusterQueue 的 `fairSharing` 部分设置 `admissionFairSharing` 来启用准入公平共享：
 
 ```yaml
 apiVersion: kueue.x-k8s.io/v1beta2
@@ -61,11 +61,16 @@ kind: ClusterQueue
 metadata:
   name: sample-queue
 spec:
-  admissionScope:
-    admissionMode: UsageBasedFairSharing
+  fairSharing:
+    admissionFairSharing:
+      mode: UsageBasedAdmissionFairSharing
   resources:
     # ...现有资源配置...
 ```
+
+{{% alert title="注意" color="primary" %}}
+`spec.admissionScope` 字段已弃用，请改用 `spec.fairSharing.admissionFairSharing`。
+{{% /alert %}}
 
 ### LocalQueue 配置 {#local-queue-configuration}
 
