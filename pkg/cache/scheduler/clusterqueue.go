@@ -187,8 +187,6 @@ func (c *clusterQueue) updateClusterQueue(
 	switch {
 	case in.Spec.FairSharing != nil && in.Spec.FairSharing.AdmissionFairSharing != nil:
 		c.AdmissionFairSharing = in.Spec.FairSharing.AdmissionFairSharing
-	case in.Spec.AdmissionScope != nil:
-		c.AdmissionFairSharing = &kueue.AdmissionFairSharing{Mode: in.Spec.AdmissionScope.AdmissionMode}
 	default:
 		c.AdmissionFairSharing = nil
 	}

@@ -186,9 +186,6 @@ func admissionFairSharingFromSpec(spec *kueue.ClusterQueueSpec) *kueue.Admission
 	if spec.FairSharing != nil && spec.FairSharing.AdmissionFairSharing != nil {
 		return spec.FairSharing.AdmissionFairSharing
 	}
-	if spec.AdmissionScope != nil {
-		return &kueue.AdmissionFairSharing{Mode: spec.AdmissionScope.AdmissionMode}
-	}
 	return nil
 }
 
