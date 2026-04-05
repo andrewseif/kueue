@@ -102,6 +102,22 @@ spec:
                       type: object
                     type: array
                 type: object
+              admissionScope:
+                description: |-
+                  admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing.
+
+                  Deprecated: Use FairSharing.AdmissionFairSharing instead.
+                properties:
+                  admissionMode:
+                    description: |-
+                      admissionMode indicates which mode for AdmissionFairSharing should be used
+                      in the AdmissionScope. Possible values are:
+                      - UsageBasedAdmissionFairSharing
+                      - NoAdmissionFairSharing
+                    type: string
+                required:
+                - admissionMode
+                type: object
               cohort:
                 description: |-
                   cohort that this ClusterQueue belongs to. CQs that belong to the
@@ -125,21 +141,6 @@ spec:
                   participating in FairSharing.  The values are only relevant
                   if FairSharing is enabled in the Kueue configuration.
                 properties:
-                  admissionFairSharing:
-                    description: |-
-                      admissionFairSharing contains the properties of the ClusterQueue
-                      when participating in AdmissionFairSharing.
-                    properties:
-                      mode:
-                        description: |-
-                          mode indicates which mode for AdmissionFairSharing should be used.
-                          Possible values are:
-                          - UsageBasedAdmissionFairSharing
-                          - NoAdmissionFairSharing
-                        type: string
-                    required:
-                    - mode
-                    type: object
                   weight:
                     anyOf:
                     - type: integer
@@ -887,6 +888,25 @@ spec:
                     x-kubernetes-list-type: map
                 required:
                 - admissionChecks
+                type: object
+              admissionScope:
+                description: |-
+                  admissionScope indicates whether ClusterQueue uses the Admission Fair Sharing.
+
+                  Deprecated: Use FairSharing.AdmissionFairSharing instead.
+                properties:
+                  admissionMode:
+                    description: |-
+                      admissionMode indicates which mode for AdmissionFairSharing should be used
+                      in the AdmissionScope. Possible values are:
+                      - UsageBasedAdmissionFairSharing
+                      - NoAdmissionFairSharing
+                    enum:
+                    - UsageBasedAdmissionFairSharing
+                    - NoAdmissionFairSharing
+                    type: string
+                required:
+                - admissionMode
                 type: object
               cohortName:
                 description: |-
