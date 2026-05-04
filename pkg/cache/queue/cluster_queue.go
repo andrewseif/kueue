@@ -818,7 +818,16 @@ func baseCompareFunc(log logr.Logger, wo workload.Ordering, sw *stickyWorkload) 
 }
 
 // queueOrderingFunc composes fair-sharing usage (when enabled) with baseCompareFunc.
-func queueOrderingFunc(ctx context.Context, cl client.Client, wo workload.Ordering, fsResWeights map[corev1.ResourceName]float64, enableAdmissionFs bool, afsEntryPenalties *queueafs.AfsEntryPenalties, afsConsumedResources *queueafs.AfsConsumedResources, sw *stickyWorkload) func(a, b *workload.Info) int {
+func queueOrderingFunc(
+	ctx context.Context,
+	cl client.Client,
+	wo workload.Ordering,
+	fsResWeights map[corev1.ResourceName]float64,
+	enableAdmissionFs bool,
+	afsEntryPenalties *queueafs.AfsEntryPenalties,
+	afsConsumedResources *queueafs.AfsConsumedResources,
+	sw *stickyWorkload,
+) func(a, b *workload.Info) int {
 	log := ctrl.LoggerFrom(ctx)
 	baseCmp := baseCompareFunc(log, wo, sw)
 	if !enableAdmissionFs {
