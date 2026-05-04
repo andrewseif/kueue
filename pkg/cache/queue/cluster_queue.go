@@ -193,7 +193,15 @@ func admissionFairSharingFromSpec(spec *kueue.ClusterQueueSpec) *kueue.Admission
 	return nil
 }
 
-func newClusterQueue(ctx context.Context, client client.Client, cq *kueue.ClusterQueue, wo workload.Ordering, afsConfig *config.AdmissionFairSharing, afsEntryPenalties *queueafs.AfsEntryPenalties, afsConsumedResources *queueafs.AfsConsumedResources) (*ClusterQueue, error) {
+func newClusterQueue(
+	ctx context.Context,
+	client client.Client,
+	cq *kueue.ClusterQueue,
+	wo workload.Ordering,
+	afsConfig *config.AdmissionFairSharing,
+	afsEntryPenalties *queueafs.AfsEntryPenalties,
+	afsConsumedResources *queueafs.AfsConsumedResources,
+) (*ClusterQueue, error) {
 	enableAdmissionFs, fsResWeights := afs.ResourceWeights(admissionFairSharingFromSpec(&cq.Spec), afsConfig)
 	cqImpl := newClusterQueueImpl(
 		ctx,
