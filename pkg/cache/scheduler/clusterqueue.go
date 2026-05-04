@@ -96,6 +96,8 @@ type clusterQueue struct {
 
 	AdmissionFairSharing *kueue.AdmissionFairSharing
 
+	ConcurrentAdmissionPolicy *kueue.ConcurrentAdmissionPolicy
+
 	roleTracker *roletracker.RoleTracker
 
 	// values extracted from K8s labels/annotations, used as custom Prometheus metric labels
@@ -187,10 +189,22 @@ func (c *clusterQueue) updateClusterQueue(
 	switch {
 	case in.Spec.FairSharing != nil && in.Spec.FairSharing.AdmissionFairSharing != nil:
 		c.AdmissionFairSharing = in.Spec.FairSharing.AdmissionFairSharing
+	case in.Spec.AdmissionScope != nil:
+		c.AdmissionFairSharing = &kueue.AdmissionFairSharing{Mode: in.Spec.AdmissionScope.AdmissionMode}
 	default:
 		c.AdmissionFairSharing = nil
 	}
+	if features.Enabled(features.ConcurrentAdmission) {
+		c.ConcurrentAdmissionPolicy = in.Spec.ConcurrentAdmissionPolicy
+	}
 	return nil
+}
+
+func (c *clusterQueue) ConcurrentAdmissionEnabled() bool {
+	if !features.Enabled(features.ConcurrentAdmission) {
+		return false
+	}
+	return c.ConcurrentAdmissionPolicy != nil
 }
 
 func createdResourceGroups(kueueRgs []kueue.ResourceGroup) []ResourceGroup {

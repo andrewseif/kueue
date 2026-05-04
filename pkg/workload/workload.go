@@ -45,6 +45,7 @@ import (
 	kueue "sigs.k8s.io/kueue/apis/kueue/v1beta2"
 	queueafs "sigs.k8s.io/kueue/pkg/cache/queue/afs"
 	"sigs.k8s.io/kueue/pkg/constants"
+	controllerconstants "sigs.k8s.io/kueue/pkg/controller/constants"
 	"sigs.k8s.io/kueue/pkg/features"
 	"sigs.k8s.io/kueue/pkg/metrics"
 	"sigs.k8s.io/kueue/pkg/resources"
@@ -83,6 +84,7 @@ var (
 		kueue.WorkloadRequeued,
 		kueue.WorkloadDeactivationTarget,
 		kueue.WorkloadFinished,
+		kueue.WorkloadPodsReady,
 	}
 )
 
@@ -104,6 +106,11 @@ func Status(w *kueue.Workload) string {
 		return StatusQuotaReserved
 	}
 	return StatusPending
+}
+
+// FromQuotaReservedOrAdmittedToPending reports a transition from quota-reserved or admitted to pending.
+func FromQuotaReservedOrAdmittedToPending(prevStatus, newStatus string) bool {
+	return (prevStatus == StatusQuotaReserved || prevStatus == StatusAdmitted) && newStatus == StatusPending
 }
 
 type AssignmentClusterQueueState struct {
@@ -336,6 +343,11 @@ func computeSchedulingHash(log logr.Logger, wl *kueue.Workload, totalRequests []
 	shape := map[string]any{
 		"podSets":  podSetShapes,
 		"priority": effectivePriority,
+	}
+	if features.Enabled(features.ConcurrentAdmission) {
+		if val, ok := wl.GetAnnotations()[controllerconstants.WorkloadAllowedResourceFlavorAnnotation]; ok {
+			shape["allowedFlavors"] = val
+		}
 	}
 	shapeJSON, err := json.Marshal(shape)
 	if err != nil {
@@ -973,6 +985,18 @@ func SetFinishedCondition(w *kueue.Workload, now time.Time, reason string, messa
 	return apimeta.SetStatusCondition(&w.Status.Conditions, condition)
 }
 
+func SetAdmittedCondition(w *kueue.Workload, now time.Time, reason string, message string) bool {
+	condition := metav1.Condition{
+		Type:               kueue.WorkloadAdmitted,
+		Status:             metav1.ConditionTrue,
+		LastTransitionTime: metav1.NewTime(now),
+		Reason:             reason,
+		Message:            api.TruncateConditionMessage(message),
+		ObservedGeneration: w.Generation,
+	}
+	return apimeta.SetStatusCondition(&w.Status.Conditions, condition)
+}
+
 func SetBlockedOnPreemptionGatesCondition(w *kueue.Workload, now time.Time, reason string, message string) bool {
 	condition := metav1.Condition{
 		Type:               kueue.WorkloadBlockedOnPreemptionGates,
@@ -1278,6 +1302,33 @@ func (o Ordering) GetQueueOrderTimestamp(w *kueue.Workload) *metav1.Time {
 // HasQuotaReservation checks if workload is admitted based on conditions
 func HasQuotaReservation(w *kueue.Workload) bool {
 	return apimeta.IsStatusConditionTrue(w.Status.Conditions, kueue.WorkloadQuotaReserved)
+}
+
+// EvictionPendingLatency returns cluster queue, eviction reason, and latency from the WorkloadEvicted
+// condition's last transition until now when oldWl→newWl is the quota-release eviction→pending
+// transition that should record workload_eviction_latency_seconds. Otherwise ok is false and other
+// return values are zero.
+func EvictionPendingLatency(oldWl, newWl *kueue.Workload, now time.Time) (kueue.ClusterQueueReference, string, time.Duration, bool) {
+	if oldWl == nil || newWl == nil {
+		return "", "", 0, false
+	}
+	prevStatus := Status(oldWl)
+	newStatus := Status(newWl)
+	if !FromQuotaReservedOrAdmittedToPending(prevStatus, newStatus) {
+		return "", "", 0, false
+	}
+	c := apimeta.FindStatusCondition(newWl.Status.Conditions, kueue.WorkloadEvicted)
+	if c == nil || c.Status != metav1.ConditionTrue {
+		return "", "", 0, false
+	}
+	if oldWl.Status.Admission == nil {
+		return "", "", 0, false
+	}
+	cq := oldWl.Status.Admission.ClusterQueue
+	if cq == "" {
+		return "", "", 0, false
+	}
+	return cq, c.Reason, now.Sub(c.LastTransitionTime.Time), true
 }
 
 // UpdateReclaimablePods updates the ReclaimablePods list for the workload with SSA.
