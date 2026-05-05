@@ -190,6 +190,9 @@ func admissionFairSharingFromSpec(spec *kueue.ClusterQueueSpec) *kueue.Admission
 	if spec.FairSharing != nil && spec.FairSharing.AdmissionFairSharing != nil {
 		return spec.FairSharing.AdmissionFairSharing
 	}
+	if spec.AdmissionScope != nil { //nolint:staticcheck // intentional: reading deprecated field for backward compatibility
+		return &kueue.AdmissionFairSharing{Mode: spec.AdmissionScope.AdmissionMode} //nolint:staticcheck // intentional: reading deprecated field for backward compatibility
+	}
 	return nil
 }
 

@@ -56,7 +56,7 @@ type AdmissionFairSharing struct {
 	//
 	// +kubebuilder:validation:Enum=UsageBasedAdmissionFairSharing;NoAdmissionFairSharing
 	// +required
-	Mode AdmissionMode `json:"mode"`
+	Mode AdmissionMode `json:"mode,omitempty"`
 }
 
 // FairSharingStatus contains the information about the current status of Fair Sharing.
