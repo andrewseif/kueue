@@ -165,7 +165,7 @@ func Test_PushOrUpdate(t *testing.T) {
 			if cq.PendingTotal() != 0 {
 				t.Error("ClusterQueue should be empty")
 			}
-			cq.PushOrUpdate(workload.NewInfo(tc.workload.Clone().Obj()))
+			cq.PushOrUpdate(workload.NewInfo(tc.workload.DeepCopy()))
 			if cq.PendingTotal() != 1 {
 				t.Error("ClusterQueue should have one workload")
 			}
@@ -474,6 +474,64 @@ func TestSnapshotStableWithConcurrentFSUpdates(t *testing.T) {
 		if !slices.Equal(got, validA) && !slices.Equal(got, validB) {
 			t.Fatalf("call %d: invalid ordering %v (expected %v or %v)", i+1, got, validA, validB)
 		}
+	}
+}
+
+func TestPendingResources(t *testing.T) {
+	ctx, log := utiltesting.ContextWithLog(t)
+	now := time.Now()
+	cq := newClusterQueueImpl(ctx, nil, defaultOrdering, testingclock.NewFakeClock(now))
+
+	makePodSetWl := func(name string, cpu, memory string) *workload.Info {
+		ps := utiltestingapi.MakePodSet(kueue.DefaultPodSetName, 1).
+			Request(corev1.ResourceCPU, cpu).
+			Request(corev1.ResourceMemory, memory)
+		return workload.NewInfo(utiltestingapi.MakeWorkload(name, defaultNamespace).
+			PodSets(*ps.Obj()).
+			Creation(now).Obj())
+	}
+
+	// Empty queue returns empty map.
+	if got := cq.pendingResources(); len(got) != 0 {
+		t.Errorf("expected empty PendingResources on empty queue, got %v", got)
+	}
+
+	wl1 := makePodSetWl("wl1", "2", "1Gi")   // heap
+	wl2 := makePodSetWl("wl2", "1", "512Mi") // inadmissible
+	wl3 := makePodSetWl("wl3", "3", "2Gi")   // will be popped (inflight)
+
+	cq.PushOrUpdate(wl1)
+	cq.PushOrUpdate(wl3)
+	cq.requeueIfNotPresent(log, wl2, false)
+
+	// Pop wl1 or wl3 to make it inflight (heap pops in creation order).
+	inflight := cq.Pop()
+	if inflight == nil {
+		t.Fatal("expected to pop a workload")
+	}
+
+	got := cq.pendingResources()
+
+	// All three workloads (heap + inadmissible + inflight) should be counted.
+	if got[corev1.ResourceCPU] == 0 {
+		t.Errorf("expected non-zero CPU in PendingResources, got %v", got)
+	}
+	if got[corev1.ResourceMemory] == 0 {
+		t.Errorf("expected non-zero memory in PendingResources, got %v", got)
+	}
+
+	// Sum should equal wl1 + wl2 + wl3: CPU = 2+1+3 = 6000m, Memory = 1Gi+512Mi+2Gi.
+	wantCPU := wl1.TotalRequests[0].Requests[corev1.ResourceCPU] +
+		wl2.TotalRequests[0].Requests[corev1.ResourceCPU] +
+		wl3.TotalRequests[0].Requests[corev1.ResourceCPU]
+	wantMemory := wl1.TotalRequests[0].Requests[corev1.ResourceMemory] +
+		wl2.TotalRequests[0].Requests[corev1.ResourceMemory] +
+		wl3.TotalRequests[0].Requests[corev1.ResourceMemory]
+	if got[corev1.ResourceCPU] != wantCPU {
+		t.Errorf("CPU mismatch: want %d, got %d", wantCPU, got[corev1.ResourceCPU])
+	}
+	if got[corev1.ResourceMemory] != wantMemory {
+		t.Errorf("memory mismatch: want %d, got %d", wantMemory, got[corev1.ResourceMemory])
 	}
 }
 

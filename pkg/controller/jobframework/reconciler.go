@@ -1528,6 +1528,10 @@ func getPodSetsInfoFromStatus(ctx context.Context, c client.Client, w *kueue.Wor
 
 		info.Labels[constants.PodSetLabel] = string(psAssignment.Name)
 
+		if _, exists := w.Labels[kueue.MultiKueueOriginLabel]; exists {
+			info.Labels[kueue.MultiKueueWorkerWorkloadPodLabel] = kueue.MultiKueueWorkerWorkloadPodValue
+		}
+
 		if features.Enabled(features.AssignQueueLabelsForPods) {
 			assignQueueLabels(ctx, info.Labels, w)
 		}
@@ -1598,6 +1602,9 @@ func (r *JobReconciler) handleJobWithNoWorkload(ctx context.Context, job Generic
 	}
 	r.record.Eventf(object, corev1.EventTypeNormal, ReasonCreatedWorkload,
 		"Created Workload: %v", workload.Key(wl))
+
+	RecordWorkloadCreationLatency(ctx, job.Object(), job.GVK().Kind, wl, r.customLabels, r.RoleTracker())
+
 	return nil
 }
 

@@ -40,6 +40,7 @@ import (
 	"sigs.k8s.io/kueue/pkg/controller/jobframework"
 	podcontroller "sigs.k8s.io/kueue/pkg/controller/jobs/pod"
 	podconstants "sigs.k8s.io/kueue/pkg/controller/jobs/pod/constants"
+	"sigs.k8s.io/kueue/pkg/features"
 	"sigs.k8s.io/kueue/pkg/util/tas"
 	utiltesting "sigs.k8s.io/kueue/pkg/util/testing"
 	utiltestingapi "sigs.k8s.io/kueue/pkg/util/testing/v1beta2"
@@ -1258,7 +1259,7 @@ var _ = ginkgo.Describe("Pod controller", ginkgo.Label("job:pod", "area:jobs"), 
 				gomega.Expect(createdWorkload.Spec.QueueName).To(gomega.Equal(kueue.LocalQueueName("test-queue")), "The Workload should have .spec.queueName set")
 
 				ginkgo.By("checking that excess pod is deleted before admission", func() {
-					excessPod := excessBasePod.Clone().Obj()
+					excessPod := excessBasePod.DeepCopy()
 					util.WaitForNextSecondAfterCreation(pod2)
 					util.MustCreate(ctx, k8sClient, excessPod)
 
@@ -1299,7 +1300,7 @@ var _ = ginkgo.Describe("Pod controller", ginkgo.Label("job:pod", "area:jobs"), 
 				})
 
 				ginkgo.By("checking that excess pod is deleted after admission", func() {
-					excessPod := excessBasePod.Clone().Obj()
+					excessPod := excessBasePod.DeepCopy()
 					util.MustCreate(ctx, k8sClient, excessPod)
 
 					util.ExpectObjectToBeDeleted(ctx, k8sClient, excessPod, false)
@@ -2729,7 +2730,9 @@ var _ = ginkgo.Describe("Pod controller with deployment-owned pods and waitForPo
 		util.ExpectObjectToBeDeleted(ctx, k8sClient, fl, true)
 	})
 
-	ginkgo.It("should not requeue stale workloads after pod is deleted and replaced", framework.SlowSpec, func() {
+	ginkgo.It("should not requeue stale workloads after pod is deleted and replaced with FinishOrphanedWorkloads feature enabled", framework.SlowSpec, func() {
+		features.SetFeatureGateDuringTest(ginkgo.GinkgoTB(), features.FinishOrphanedWorkloads, true)
+
 		ginkgo.By("creating pod-1")
 		pod1 := testingpod.MakePod("pod-1", ns.Name).
 			Queue(lq.Name).

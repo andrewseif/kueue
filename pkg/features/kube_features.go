@@ -185,6 +185,12 @@ const (
 	// via standard resources.requests using DeviceClass extendedResourceName.
 	DRAExtendedResources featuregate.Feature = "DRAExtendedResources"
 
+	// owner: @MaysaMacedo
+	// kep: https://github.com/kubernetes-sigs/kueue/tree/main/keps/7513-quota-check-strategy
+	//
+	// Enable QuotaCheckStrategy for quota admission.
+	QuotaCheckStrategy featuregate.Feature = "QuotaCheckStrategy"
+
 	// owner: @khrm
 	// kep: https://github.com/kubernetes-sigs/kueue/tree/main/keps/2349-multikueue-external-custom-job-support
 	//
@@ -373,6 +379,9 @@ const (
 	//
 	// Enables Concurrent Admission feature which allows pursuing multiple ResourceFlavors in parallel.
 	ConcurrentAdmission featuregate.Feature = "ConcurrentAdmission"
+
+	// Enable recording of WorkloadCreationLatency metric.
+	MetricForWorkloadCreationLatency featuregate.Feature = "MetricForWorkloadCreationLatency"
 )
 
 func init() {
@@ -570,12 +579,17 @@ var defaultVersionedFeatureGates = map[featuregate.Feature]featuregate.Versioned
 	RejectUpdatesToCQWithInvalidOnFlavors: {
 		{Version: version.MustParse("0.18"), Default: false, PreRelease: featuregate.Alpha},
 	},
-
 	FinishOrphanedWorkloads: {
-		{Version: version.MustParse("0.18"), Default: true, PreRelease: featuregate.Beta},
+		{Version: version.MustParse("0.18"), Default: false, PreRelease: featuregate.Alpha},
 	},
 	ConcurrentAdmission: {
 		{Version: version.MustParse("0.18"), Default: false, PreRelease: featuregate.Alpha},
+	},
+	QuotaCheckStrategy: {
+		{Version: version.MustParse("0.18"), Default: false, PreRelease: featuregate.Alpha},
+	},
+	MetricForWorkloadCreationLatency: {
+		{Version: version.MustParse("0.18"), Default: true, PreRelease: featuregate.Beta}, // GA in 0.21
 	},
 }
 
